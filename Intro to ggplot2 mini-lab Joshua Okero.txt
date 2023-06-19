@@ -1,0 +1,58 @@
+
+Joshua Okero													4/25/23
+
+Part 3: Experiment with modifying commands in a bar plot
+Find the part of the code with the bar plot (toward the beginning). It looks like this: 
+
+ggplot(df,aes(x=SeasonOrdered,y=Temperature,fill=City)) +
+   geom_col(position="dodge") +
+   ggtitle("Average high temperature across \n seasons in several US cities") +
+   xlab("Season") +
+   ylab("Temperature (F)")
+
+1. (*Response) Run the code, then change “fill” to “color” on a bar plot and run it again to see the difference. What does fill do? What does color do? 
+
+Fill changes the inside of an aesthetic while color changes the outside of an aesthetic.
+
+2.(*Response) What if you delete the “position = “dodge”” - what’s the difference? What does “position = “dodge”” accomplish?
+
+Deleting dodge stacks the cities on top of each other in a column. 
+"position="dodge"" causes the values for each city to have it's own column for each season rather than being aligned in the same column.
+
+3.(*Response) Go back to the original code and delete the + sign on the line before the “ggtitle” command. Put your cursor in the first two lines of the command and run it. What does the plot look like (describe the problem)? In what case might you look for a bug in your code where a + sign was forgotten? 
+
+The title of the graph is erased when the + sign was removed.
+I would look for a bug in my code where a + sign was omitted when the aesthetic is missing a graph component that I'm sure I coded.
+
+
+
+
+Part 4: Experiment with modifying commands in a line plot 
+Now find the basic line plot. The code looks like this:
+
+ggplot(df,aes(x=SeasonOrdered,y=Temperature,color=City,group=City)) +
+   geom_line() +
+   ggtitle("Average high temperature across \n seasons in several US cities") +
+   xlab("Season") +
+   ylab("Temperature (F)")
+
+1.(*Response) Remove the “color” option on the line plot by deleting this part (including the comma): “color=City,”. What happens? 
+The lines that correspond to the cities are no longer color coded
+
+2.(*Response) Now, copy and paste the code for the original basic line plot provided above, and replace the word “color” with “shape”. Also add in a point geom. The first line should now look like this: ggplot(df,aes(x=SeasonOrdered,y=Temperature,shape=City,group=City)) +
+
+At the end of the first line, include the code: geom_point() + 
+
+What is the result? The aesthetic has a point geometry rather than a line geometry. The cities are depicted by shapes rather than lines.The aesthetic also lacks color. 
+
+
+3.(*Response) For you, which is easier to interpret, this or the color plot?  
+
+It's easier for me to interpret	the color plot.
+
+4.(*Code) Fortunately, we don’t have to limit ourselves to one plot type or another; we can use multiple layers. Now let’s create a line plot with color, shape, and linetype all coding the City, which will make the lines very easy to distinguish. Include both the “color=City” and “shape=City” components. Be sure to have exactly one comma between each of the items in the parentheses. Include both the geom_line() and geom_point() geometries. Run the code to make sure you can make a working plot with both line colors and point shapes before moving on.
+
+ggplot(df,aes(x=SeasonOrdered,y=Temperature,color = City, shape=City,linetype =City, group = City)) +  geom_line() + geom_point()+  ggtitle("Average high temperature across \n seasons in several US cities") +  xlab("Season") +  ylab("Temperature (F)")
+
+
+

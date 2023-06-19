@@ -1,0 +1,224 @@
+---
+title: "ggplot2 lab"
+author: "Lab assignment authored by Joanna Lankester"
+subtitle: Lab completed by Joshua Okero
+output:
+  html_document:
+    df_print: paged
+---
+
+# Instructions
+Go through this R notebook sequentially. Questions are numbered with the letter Q. 
+Some questions just have code you need to run. Questions requiring code or a response will have a *. 
+Please remember to **title** plots and **label** axes (including units, where needed).
+
+# Setup
+First we'll load libraries and data needed for this lab.
+
+### Q1
+Run this code first. 
+```{r}
+library(tidyverse)
+library(reshape2)
+# in billions of dollars
+df <- melt(USPersonalExpenditure,varnames=c("category","year"),value.name = "amount")
+
+mpg %>% 
+    filter(manufacturer=="ford" | manufacturer=="toyota" | manufacturer=="nissan") %>%  
+    group_by(manufacturer,class) %>% 
+    tally() %>% 
+    group_by(manufacturer) %>% 
+    mutate(total = sum(n)) %>% 
+    group_by(manufacturer) %>% 
+    mutate(percent_of_brand = 100*n/total) %>% 
+    select(manufacturer,class,n,percent_of_brand) -> df_car
+```
+
+# Time series plots
+
+### Q2
+
+Run this command to understand what the dataset looks like. 
+```{r}
+df %>% head(10)
+```
+### Q3* 
+Here are two ways of making bar plots of the amount people spent each year in the U.S. on various categories (in billions of dollars). 
+Fill in the title (ending with your initials) and label. 
+```{r}
+ggplot(df,aes(x=year,y=amount,fill=category)) + 
+    geom_col() +
+    labs(title="Amount of Money US Consumers Spent Each Year",y="label (including units)")
+
+ggplot(df,aes(x=year,y=amount,fill=category)) + 
+    geom_col(position="dodge") +
+    labs(title="Amount of Money US Consumers Spent Each Year",y="label (including units)")
+```
+
+### Q4*
+However, there is usually a better way to represent time data.
+Copy and paste one of the blocks of code from above and change it to the type of plot that is generally used for time series data.
+
+Hint: change will include a geom change, and another small item
+```{r}
+ggplot(df,aes(x=year,y=amount,fill=category, color = category)) + 
+    geom_line() +
+    labs(title="Amount of Money US Consumers Spent Each Year",y="label (including units)")
+
+```
+
+### Q5 OPTIONAL
+Due to the difference in order of magnitude for the expenditures, it's difficult to see how rapidly some of them grew. 
+Add a scale change component to make it easier to see.
+```{r}
+
+```
+# Plotting a histogram, bar plot, and box plot
+
+### Q6
+Run this command to see what the dataset looks like.
+```{r}
+tips %>% head()
+
+```
+### Q7*
+The geom_histogram() requires either a number of bins or a binwidth. Choose one that makes the plot look nice. Add title and label appropriately.
+```{r}
+ggplot(tips,aes(x=total_bill)) + 
+    geom_histogram(bin_width=1)+labs(title = "Total Bills Amounts A Waiter Received for Several Months") 
+```
+### Q8*
+Now modify the histogram to become a boxplot instead. Hint: this should just involve a geom change. 
+Also, change the "x=" to "y=". Update labels as needed.
+
+Note: this is an intermediate step (on the way to Q9) that will make a plot that doesn't yet
+give much information. 
+```{r}
+ggplot(tips,aes(y=total_bill)) + 
+    geom_boxplot()+labs(title = "Total Bills Amounts A Waiter Received for Several Months") + theme(axis.title.x=element_blank(),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())
+```
+### Q9*
+Modify to make a boxplot by day of the week. 
+Hint: you will need an additional specification in the "aes(...)" section.
+
+```{r}
+ggplot(tips,aes(x= day, y=total_bill))+ 
+    geom_boxplot()+labs(title = "Total Bills Amounts A Waiter Received for Certain Days",x="Day of the week")
+```
+### Q10* (response)
+Suppose we want to create a bar plot of the **average** bill for dining by day of the week. 
+You have a rough idea of how expensive the restaurant bills are based on your histogram
+and box plots above. What do you think the following plot might be showing? (i.e. is it showing
+average bill like we want, or something else, and if something else, what is it?)
+
+*Replace this text with your answer*
+
+```{r}
+#The plot shows the sum of all bills for a respetive day
+```
+### Q11*
+Here is the way around it. For future labs, we will learn how to do pre-processing of the 
+data so that it is easier to make plots without this syntax.  
+
+- Customize it by flipping the coordinate to make it a horizontal plot. Do this without changing the mapping of x= and y=.  
+- Add a fill="colorname" option inside the stat_summary parentheses, filling in colorname whatever color you'd like. Here is a list of options: (see the assignment on Canvas)
+- Title/label as needed.
+
+```{r}
+ggplot(tips,aes(x=day)) + 
+    stat_summary(aes(y=total_bill),fill="chartreuse3",fun="median",geom = "bar")+labs(title="Number of Tips A Waiter Received on Certain Days")+coord_flip()
+```
+# Plotting proportions
+
+### Q12
+Run this command to see what the following dataset looks like: 
+```{r}
+df_car %>% head()
+```
+### Q13
+Here's a baseline plot to start with. We can add different geoms to produce plots. 
+Run the following line of code. Note that no plot will be generated. Instead, we 
+will obtain an object that we can add to in order to create plots.
+
+```{r}
+car_plot <- ggplot(df_car,aes(x=manufacturer,y=percent_of_brand,fill=class)) 
+```
+
+### Q14*
+Add a geom to car_plot to make a stacked bar plot. (What else is needed to complete the plot?)
+```{r}
+# Hint: 
+car_plot + geom_bar(position="fill", stat="identity")+labs( title = "Car Class Percentage by Brand")
+
+```
+
+### Q15*
+Convert the stacked bar plot to a grouped bar chart. 
+```{r}
+ggplot(df_car,aes(x=manufacturer,y= percent_of_brand, fill=class))+geom_bar(position="dodge", stat="identity")+labs( title = "Percentage of a Car Class by Brand")
+```
+
+
+### Q16* (response only)
+
+Here is the code for a pie chart. Answer these questions (no coding required): 
+
+a. Why is this pie chart made with a geom_col()? In other words, what is the difference between a stacked bar and a pie chart, from the Grammar of Graphics perspective? 
+
+*Type your response here*
+A pie chart makes it easy to compare proportions. On the other hand a stacked bar plot represents absolute values of variables.
+
+In this case,a pie chart is used because easily comparing proportions is preferred. 
+
+b. What is the line "facet_grid" doing? If you're not sure, add this line on to your grouped bar 
+plot (it won't be a correct plot, but you'll see the change that is made)
+
+*Type your response here*
+facet_grid() makes a grid of plots that show different subsets of the data.
+
+```{r}
+ggplot(df_car,aes(x="",y=percent_of_brand,fill=class)) + 
+    geom_col() + 
+    coord_polar("y") +
+    theme_void() + 
+    facet_grid(~manufacturer)+  labs(title= "Proportion of A Car Class by Brand")
+```
+
+### Q17*
+Finally, choose 3 built-in themes that you'd like to try. 
+Choose 3 plots from this lab and paste them here, and apply a theme to each. Make these different from the default theme.
+
+```{r}
+# theme 1: 
+ggplot(df_car,aes(x="",y=percent_of_brand,fill=class)) + 
+    geom_col() + 
+    coord_polar("y") +
+    theme_void() + 
+    facet_grid(~manufacturer) +theme_classic()+ labs(title= "Proportion of A Car Class by Brand")
+
+```
+
+```{r}
+# theme 2:
+ggplot(tips,aes(x=day)) + stat_summary(aes(y=total_bill),fill="chartreuse3",fun="median",geom = "bar")+coord_flip() +theme_light()+labs(title="Number of Tips A Waiter Received on Certain Days")
+
+```
+
+```{r}
+# theme 3:
+car_plot + geom_bar(position="dodge", stat="identity") + theme_linedraw()+labs( title = "Percentage of a Car Class by Brand")
+```
+
+# Turning in the lab
+
+### Important: 
+- Don't forget to title and label all plots
+- You may want to re-run everything from the top if you think you may have changed the code 
+without running it at any point. (One easy way is to click at the top, use the "Run"
+dropdown, and select "Run All Chunks Below")
+
+### To turn in - 2 files: 
+- The .Rmd file that is the R notebook
+- The .html file that is produced when you click the "Preview" button
